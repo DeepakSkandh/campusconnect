@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "campusconnect-backend"
+version = "0.1.0"
+description = "CampusConnect API: campus resources, events, bookings and volunteering."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "pydantic>=2.8,<3.0",
+    "pydantic-settings>=2.7,<3.0",
+    "sqlalchemy>=2.0.30,<2.1",
+    "psycopg[binary]>=3.2,<4.0",
+    "alembic>=1.13,<2.0",
+    # IANA time zone data for zoneinfo on Windows (Linux/WSL use the system database).
+    "email-validator>=2.2,<3.0",
+    "tzdata>=2024.1; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<10",
+    "pytest-asyncio>=0.24,<2",
+    "httpx>=0.27,<1.0",
+    "ruff>=0.6,<1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Lets `pytest` find the `app` package even without an editable install.
+pythonpath = ["."]
+addopts = "-ra --strict-markers --strict-config"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "I",     # import sorting
+    "B",     # bugbear
+    "UP",    # pyupgrade
+    "SIM",   # simplify
+    "C4",    # comprehensions
+    "PT",    # pytest style
+    "S",     # bandit (security)
+    "ASYNC", # async pitfalls
+    "RUF",   # ruff-specific
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.lint.per-file-ignores]
+# Plain asserts are how pytest works; tests use deliberately fake credentials.
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.ruff.format]
+quote-style = "double"
